@@ -40,4 +40,4 @@ npm run lint
 
 ## Challenges
 
-- dat-GUI is not scalable styling wise
+- dat-GUI is not developer friendly to scale styling wise
