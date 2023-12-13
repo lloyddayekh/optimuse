@@ -18,7 +18,6 @@
     "sass": "^1.69.5",
     "three": "^0.159.0",
     "vue": "^3.3.10",
-    "vue-accessible-color-picker": "^5.0.1",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {

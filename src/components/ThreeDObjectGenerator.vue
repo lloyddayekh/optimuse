@@ -7,7 +7,8 @@ import {
   Scene,
   WebGL1Renderer,
   Shape,
-  ExtrudeGeometry
+  ExtrudeGeometry,
+  Color
 } from 'three'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
@@ -79,23 +80,34 @@ const object3D = new Mesh(
   new ExtrudeGeometry(shape, extrudeSettings.value),
   new MeshBasicMaterial({ color: 0xdfc5fe, transparent: true, opacity: 0.8 })
 )
-const objectColor = { color: 0xdfc5fe }
+const objectColorPresentation = { color: 0xdfc5fe, backgroundColor: 0x140a21 }
+
 scene.add(object3D)
 
 //ANCHOR - Create new gui
 
 const gui = new GUI()
-const objectFolder = gui.addFolder('Cube')
-objectFolder.add(object3D.rotation, 'x', 0, Math.PI * 2).name('Rotate x:')
-objectFolder.add(object3D.rotation, 'y', 0, Math.PI * 2).name('Rotate y:')
-objectFolder.add(object3D.rotation, 'z', 0, Math.PI * 2).name('Rotate y:')
-objectFolder.add(object3D.scale, 'x', 0, 3).name('Scale x:')
-objectFolder.add(object3D.scale, 'y').min(0).max(adjustableHeight.value).name('Scale y:')
-objectFolder.add(object3D.scale, 'z', 0, 2).name('Scale z:')
-objectFolder
-  .addColor(objectColor, 'color')
-  .name('Change color:')
-  .onChange(() => object3D.material.color.set(objectColor.color))
+gui.domElement.id = 'gui'
+
+const objectRotation = gui.addFolder('Rotation')
+objectRotation.add(object3D.rotation, 'x', 0, Math.PI * 2).name('Rotate x:')
+objectRotation.add(object3D.rotation, 'y', 0, Math.PI * 2).name('Rotate y:')
+objectRotation.add(object3D.rotation, 'z', 0, Math.PI * 2).name('Rotate y:')
+
+const objectScale = gui.addFolder('Scale')
+objectScale.add(object3D.scale, 'x', 0, 3).name('Scale x:')
+objectScale.add(object3D.scale, 'y').min(0).max(adjustableHeight.value).name('Scale y:')
+objectScale.add(object3D.scale, 'z', 0, 2).name('Scale z:')
+
+const objectColor = gui.addFolder('Change Color')
+objectColor
+  .addColor(objectColorPresentation, 'color')
+  .name('Color:')
+  .onChange(() => object3D.material.color.set(objectColorPresentation.color))
+objectColor
+  .addColor(objectColorPresentation, 'backgroundColor')
+  .name('Background Color:')
+  .onChange((value) => (scene.background = new Color(value)))
 
 function loop() {
   renderer.render(scene, camera)
@@ -118,12 +130,12 @@ onMounted(() => {
 
   updateRenderer()
   updateCamera()
-  objectFolder.open()
+  objectRotation.open()
 
   loop()
 })
 onUnmounted(() => {
-  gui.removeFolder(objectFolder)
+  gui.destroy()
 })
 
 watch(aspectRatio, updateRenderer)
